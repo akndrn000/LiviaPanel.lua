@@ -17,7 +17,7 @@ Panel sederhana untuk Roblox executor (dirancang untuk layar HP, diuji konsepnya
 Salin isi `LiviaPanel.lua` ke executor, atau jalankan lewat loadstring:
 
 ```lua
-loadstring(game:HttpGet("https://raw.githubusercontent.com/USERNAME/REPO/main/LiviaPanel.lua"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/akndrn000/REPO/main/LiviaPanel.lua"))()
 ```
 
 Ganti `USERNAME` dan `REPO` dengan akun dan nama repository kamu.
