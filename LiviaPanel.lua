@@ -1,12 +1,3 @@
-```lua
---[[
-    Livia Panel v2.0
-    Speed | Jump | Fly
-
-    Ghost dan ESP telah dihapus.
-    Panel dibuat lebih kecil untuk layar HP.
-]]
-
 local Players = game:GetService("Players")
 local CoreGui = game:GetService("CoreGui")
 local RunService = game:GetService("RunService")
@@ -567,4 +558,3 @@ cleanup = function()
 end
 
 _G.LiviaCleanup = cleanup
-```
