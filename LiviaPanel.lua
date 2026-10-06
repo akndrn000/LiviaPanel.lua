@@ -7,205 +7,250 @@ local UIS = game:GetService("UserInputService")
 local LP = Players.LocalPlayer
 
 -- ==========================================
--- CLEANUP PREVIOUS VERSION
+-- REMOVE PREVIOUS VERSION
 -- ==========================================
 
 if _G.LiviaCleanup then
     pcall(_G.LiviaCleanup)
 end
 
-if CoreGui:FindFirstChild("LiviaPanel") then
-    CoreGui.LiviaPanel:Destroy()
+local old = CoreGui:FindFirstChild("LiviaPanel")
+if old then
+    old:Destroy()
 end
 
 -- ==========================================
--- STATE
+-- CONFIG
 -- ==========================================
 
-local S = {
+local State = {
     Speed = false,
     Jump = false,
     Fly = false
 }
 
-local V = {
+local Value = {
     Speed = 50,
     Jump = 100,
     Fly = 60
 }
 
 -- ==========================================
--- THEME
+-- COLORS
 -- ==========================================
 
-local T = {
-    BG = Color3.fromRGB(16, 17, 24),
-    Panel = Color3.fromRGB(24, 26, 37),
-    Card = Color3.fromRGB(32, 35, 50),
-    Input = Color3.fromRGB(44, 48, 68),
-    Stroke = Color3.fromRGB(58, 63, 90),
+local C = {
+    Background = Color3.fromRGB(14, 15, 21),
+    Header = Color3.fromRGB(23, 25, 34),
+    Row = Color3.fromRGB(28, 31, 43),
+    Input = Color3.fromRGB(39, 43, 59),
+
+    Border = Color3.fromRGB(55, 59, 78),
+
     Accent = Color3.fromRGB(124, 92, 255),
-    Text = Color3.fromRGB(240, 242, 250),
-    Off = Color3.fromRGB(70, 75, 100),
-    On = Color3.fromRGB(46, 204, 133),
-    Red = Color3.fromRGB(240, 84, 96),
+    Active = Color3.fromRGB(46, 204, 133),
+    Inactive = Color3.fromRGB(67, 72, 94),
+    Close = Color3.fromRGB(235, 80, 92),
+
+    Text = Color3.fromRGB(242, 243, 248),
+    SubText = Color3.fromRGB(160, 164, 178)
 }
 
-local function corner(obj, radius)
-    local c = Instance.new("UICorner")
-    c.CornerRadius = UDim.new(0, radius or 8)
-    c.Parent = obj
-    return c
+-- ==========================================
+-- HELPERS
+-- ==========================================
+
+local function makeCorner(object, radius)
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, radius)
+    corner.Parent = object
+    return corner
 end
 
-local function stroke(obj)
-    local s = Instance.new("UIStroke")
-    s.Color = T.Stroke
-    s.Thickness = 1
-    s.Parent = obj
-    return s
+local function makeStroke(object)
+    local stroke = Instance.new("UIStroke")
+    stroke.Color = C.Border
+    stroke.Thickness = 1
+    stroke.Transparency = 0.15
+    stroke.Parent = object
+    return stroke
+end
+
+local function create(className, parent)
+    local object = Instance.new(className)
+    object.Parent = parent
+    return object
 end
 
 -- ==========================================
--- FEATURE LOGIC
+-- CHARACTER
 -- ==========================================
 
-local conns = {}
+local function getCharacter()
+    local character = LP.Character
 
-local bv
-local bg
+    if not character then
+        return nil, nil, nil
+    end
 
-local function getChar()
-    local char = LP.Character
-    local hum = char and char:FindFirstChildOfClass("Humanoid")
-    local hrp = char and char:FindFirstChild("HumanoidRootPart")
+    local humanoid = character:FindFirstChildOfClass("Humanoid")
+    local root = character:FindFirstChild("HumanoidRootPart")
 
-    return char, hum, hrp
+    return character, humanoid, root
 end
+
+-- ==========================================
+-- FLY
+-- ==========================================
+
+local bodyVelocity
+local bodyGyro
 
 local function stopFly()
-    if bv then
-        bv:Destroy()
-        bv = nil
+    if bodyVelocity then
+        bodyVelocity:Destroy()
+        bodyVelocity = nil
     end
 
-    if bg then
-        bg:Destroy()
-        bg = nil
+    if bodyGyro then
+        bodyGyro:Destroy()
+        bodyGyro = nil
     end
 
-    local _, hum = getChar()
+    local _, humanoid = getCharacter()
 
-    if hum then
-        hum.PlatformStand = false
+    if humanoid then
+        humanoid.PlatformStand = false
     end
 end
 
-local function applyChange(key, state)
-    local _, hum = getChar()
+-- ==========================================
+-- APPLY FEATURE
+-- ==========================================
 
-    if key == "Speed" and not state then
-        if hum then
-            hum.WalkSpeed = 16
+local function applyFeature(key, enabled)
+    local _, humanoid = getCharacter()
+
+    if key == "Speed" then
+        if not enabled and humanoid then
+            humanoid.WalkSpeed = 16
         end
     end
 
-    if key == "Jump" and not state then
-        if hum then
-            hum.UseJumpPower = true
-            hum.JumpPower = 50
+    if key == "Jump" then
+        if not enabled and humanoid then
+            humanoid.UseJumpPower = true
+            humanoid.JumpPower = 50
         end
     end
 
-    if key == "Fly" and not state then
-        stopFly()
+    if key == "Fly" then
+        if not enabled then
+            stopFly()
+        end
     end
 end
+
+-- ==========================================
+-- CONNECTIONS
+-- ==========================================
+
+local Connections = {}
 
 -- ==========================================
 -- FEATURE LOOP
 -- ==========================================
 
-conns[#conns + 1] = RunService.Heartbeat:Connect(function()
-    local _, hum, hrp = getChar()
+Connections[#Connections + 1] = RunService.Heartbeat:Connect(function()
+    local _, humanoid, root = getCharacter()
 
-    if not hum or not hrp then
+    if not humanoid or not root then
         return
     end
 
     -- SPEED
-    if S.Speed then
-        hum.WalkSpeed = V.Speed
+    if State.Speed then
+        humanoid.WalkSpeed = Value.Speed
     end
 
     -- JUMP
-    if S.Jump then
-        hum.UseJumpPower = true
-        hum.JumpPower = V.Jump
+    if State.Jump then
+        humanoid.UseJumpPower = true
+        humanoid.JumpPower = Value.Jump
     end
 
     -- FLY
-    if S.Fly then
-        local cam = workspace.CurrentCamera
+    if State.Fly then
+        local camera = workspace.CurrentCamera
 
-        if not bv or bv.Parent ~= hrp then
+        if not bodyVelocity or bodyVelocity.Parent ~= root then
             stopFly()
 
-            bv = Instance.new("BodyVelocity")
-            bv.MaxForce = Vector3.new(9e9, 9e9, 9e9)
-            bv.Velocity = Vector3.zero
-            bv.Parent = hrp
+            bodyVelocity = Instance.new("BodyVelocity")
+            bodyVelocity.MaxForce = Vector3.new(
+                9e9,
+                9e9,
+                9e9
+            )
+            bodyVelocity.Velocity = Vector3.zero
+            bodyVelocity.Parent = root
 
-            bg = Instance.new("BodyGyro")
-            bg.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
-            bg.P = 9e4
-            bg.Parent = hrp
+            bodyGyro = Instance.new("BodyGyro")
+            bodyGyro.MaxTorque = Vector3.new(
+                9e9,
+                9e9,
+                9e9
+            )
+            bodyGyro.P = 9e4
+            bodyGyro.Parent = root
         end
 
-        hum.PlatformStand = true
+        humanoid.PlatformStand = true
 
-        local look = cam.CFrame.LookVector
+        local look = camera.CFrame.LookVector
 
-        local flat = Vector3.new(
+        local horizontal = Vector3.new(
             look.X,
             0,
             look.Z
         )
 
-        if flat.Magnitude > 0 then
-            flat = flat.Unit
+        if horizontal.Magnitude > 0 then
+            horizontal = horizontal.Unit
 
-            bg.CFrame = CFrame.lookAt(
-                hrp.Position,
-                hrp.Position + flat
+            bodyGyro.CFrame = CFrame.lookAt(
+                root.Position,
+                root.Position + horizontal
             )
         end
 
-        local dir = hum.MoveDirection
-        local vel = dir * V.Fly
+        local direction = humanoid.MoveDirection
+        local velocity = direction * Value.Fly
 
-        if dir.Magnitude > 0 and flat.Magnitude > 0 then
-            local forward = dir:Dot(flat)
+        if direction.Magnitude > 0
+            and horizontal.Magnitude > 0 then
 
-            vel = vel + Vector3.new(
+            local forward = direction:Dot(horizontal)
+
+            velocity = velocity + Vector3.new(
                 0,
-                look.Y * forward * V.Fly,
+                look.Y * forward * Value.Fly,
                 0
             )
         end
 
-        bv.Velocity = vel
+        bodyVelocity.Velocity = velocity
     end
 end)
 
 -- ==========================================
--- TAP / DRAG SYSTEM
+-- TAP / DRAG
 -- ==========================================
 
 local DRAG_THRESHOLD = 10
 
-local drag = {
-    active = false
+local Drag = {
+    Active = false
 }
 
 local function isPress(input)
@@ -213,106 +258,110 @@ local function isPress(input)
         or input.UserInputType == Enum.UserInputType.Touch
 end
 
-local function bindDrag(obj, target, onTap)
-    obj.InputBegan:Connect(function(input)
+local function bindDrag(object, target, callback)
+    object.InputBegan:Connect(function(input)
         if not isPress(input) then
             return
         end
 
-        if drag.active then
+        if Drag.Active then
             return
         end
 
-        drag = {
-            active = true,
-            input = input,
-            startPos = input.Position,
-            target = target,
-            origin = target.Position,
-            moved = false,
-            onTap = onTap
+        Drag = {
+            Active = true,
+            Input = input,
+            Start = input.Position,
+            Origin = target.Position,
+            Target = target,
+            Moved = false,
+            Callback = callback
         }
     end)
 end
 
-conns[#conns + 1] = UIS.InputChanged:Connect(function(input)
-    if not drag.active then
+Connections[#Connections + 1] = UIS.InputChanged:Connect(function(input)
+    if not Drag.Active then
         return
     end
 
     local valid =
-        input == drag.input
+        input == Drag.Input
         or (
             input.UserInputType == Enum.UserInputType.MouseMovement
-            and drag.input.UserInputType == Enum.UserInputType.MouseButton1
+            and Drag.Input.UserInputType == Enum.UserInputType.MouseButton1
         )
 
     if not valid then
         return
     end
 
-    local delta = input.Position - drag.startPos
+    local delta = input.Position - Drag.Start
 
-    if not drag.moved then
-        if Vector2.new(delta.X, delta.Y).Magnitude > DRAG_THRESHOLD then
-            drag.moved = true
+    if not Drag.Moved then
+        if delta.Magnitude > DRAG_THRESHOLD then
+            Drag.Moved = true
         end
     end
 
-    if drag.moved then
-        local origin = drag.origin
+    if Drag.Moved then
+        local origin = Drag.Origin
 
-        drag.target.Position = UDim2.new(
+        Drag.Target.Position = UDim2.new(
             origin.X.Scale,
             origin.X.Offset + delta.X,
+
             origin.Y.Scale,
             origin.Y.Offset + delta.Y
         )
     end
 end)
 
-conns[#conns + 1] = UIS.InputEnded:Connect(function(input)
-    if not drag.active then
+Connections[#Connections + 1] = UIS.InputEnded:Connect(function(input)
+    if not Drag.Active then
         return
     end
 
-    if input == drag.input then
-        local tap = (not drag.moved) and drag.onTap
+    if input ~= Drag.Input then
+        return
+    end
 
-        drag = {
-            active = false
-        }
+    local callback = Drag.Callback
+    local wasTap = not Drag.Moved
 
-        if tap then
-            tap()
-        end
+    Drag = {
+        Active = false
+    }
+
+    if wasTap and callback then
+        callback()
     end
 end)
 
 -- ==========================================
--- UI
+-- SCREEN GUI
 -- ==========================================
 
-local cleanup
+local ScreenGui = create("ScreenGui", CoreGui)
 
-local sg = Instance.new("ScreenGui")
-sg.Name = "LiviaPanel"
-sg.ResetOnSpawn = false
-sg.Parent = CoreGui
+ScreenGui.Name = "LiviaPanel"
+ScreenGui.ResetOnSpawn = false
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
 -- ==========================================
 -- MAIN PANEL
 -- ==========================================
 
-local Main = Instance.new("Frame")
-Main.Size = UDim2.new(0, 230, 0, 270)
-Main.Position = UDim2.new(0.5, -115, 0.5, -135)
-Main.BackgroundColor3 = T.BG
-Main.BorderSizePixel = 0
-Main.Parent = sg
+local Main = create("Frame", ScreenGui)
 
-corner(Main, 12)
-stroke(Main)
+Main.Name = "Main"
+Main.Size = UDim2.new(0, 245, 0, 238)
+Main.Position = UDim2.new(0.5, -122, 0.5, -119)
+Main.BackgroundColor3 = C.Background
+Main.BorderSizePixel = 0
+
+makeCorner(Main, 13)
+makeStroke(Main)
 
 bindDrag(Main, Main)
 
@@ -320,241 +369,284 @@ bindDrag(Main, Main)
 -- HEADER
 -- ==========================================
 
-local Header = Instance.new("Frame")
-Header.Size = UDim2.new(1, 0, 0, 40)
-Header.BackgroundColor3 = T.Panel
-Header.BorderSizePixel = 0
-Header.Parent = Main
+local Header = create("Frame", Main)
 
-corner(Header, 12)
+Header.Name = "Header"
+Header.Size = UDim2.new(1, 0, 0, 42)
+Header.BackgroundColor3 = C.Header
+Header.BorderSizePixel = 0
+
+makeCorner(Header, 13)
+
 bindDrag(Header, Main)
 
-local hc = Instance.new("Frame")
-hc.Size = UDim2.new(1, 0, 0, 12)
-hc.Position = UDim2.new(0, 0, 1, -12)
-hc.BackgroundColor3 = T.Panel
-hc.BorderSizePixel = 0
-hc.Parent = Header
+-- Header bottom cover
+local HeaderCover = create("Frame", Header)
 
-local line = Instance.new("Frame")
-line.Size = UDim2.new(1, 0, 0, 2)
-line.Position = UDim2.new(0, 0, 1, -2)
-line.BackgroundColor3 = T.Accent
-line.BorderSizePixel = 0
-line.Parent = Header
+HeaderCover.Size = UDim2.new(1, 0, 0, 13)
+HeaderCover.Position = UDim2.new(0, 0, 1, -13)
+HeaderCover.BackgroundColor3 = C.Header
+HeaderCover.BorderSizePixel = 0
+
+-- Accent line
+local AccentLine = create("Frame", Header)
+
+AccentLine.Size = UDim2.new(1, 0, 0, 2)
+AccentLine.Position = UDim2.new(0, 0, 1, -2)
+AccentLine.BackgroundColor3 = C.Accent
+AccentLine.BorderSizePixel = 0
 
 -- ==========================================
 -- TITLE
 -- ==========================================
 
-local Title = Instance.new("TextLabel")
-Title.Size = UDim2.new(1, -80, 1, 0)
-Title.Position = UDim2.new(0, 10, 0, 0)
+local Title = create("TextLabel", Header)
+
+Title.Size = UDim2.new(1, -82, 1, 0)
+Title.Position = UDim2.new(0, 13, 0, 0)
 Title.BackgroundTransparency = 1
+
 Title.Text = "LIVIA PANEL"
 Title.Font = Enum.Font.GothamBold
 Title.TextSize = 14
-Title.TextColor3 = T.Text
+Title.TextColor3 = C.Text
 Title.TextXAlignment = Enum.TextXAlignment.Left
-Title.Parent = Header
 
 -- ==========================================
--- HEADER BUTTON
+-- MINIMIZE
 -- ==========================================
 
-local function headBtn(x, text, color)
-    local b = Instance.new("TextButton")
-    b.Size = UDim2.new(0, 28, 0, 28)
-    b.Position = UDim2.new(1, x, 0.5, -14)
-    b.BackgroundColor3 = color
-    b.Text = text
-    b.Font = Enum.Font.GothamBold
-    b.TextSize = 14
-    b.TextColor3 = T.Text
-    b.AutoButtonColor = false
-    b.Parent = Header
+local Minimize = create("TextButton", Header)
 
-    corner(b, 7)
+Minimize.Size = UDim2.new(0, 28, 0, 28)
+Minimize.Position = UDim2.new(1, -65, 0.5, -14)
+Minimize.BackgroundColor3 = C.Input
 
-    return b
-end
+Minimize.Text = "−"
+Minimize.Font = Enum.Font.GothamBold
+Minimize.TextSize = 16
+Minimize.TextColor3 = C.Text
 
-local CloseBtn = headBtn(-34, "X", T.Red)
-local MinBtn = headBtn(-68, "-", T.Input)
+Minimize.AutoButtonColor = false
+
+makeCorner(Minimize, 7)
 
 -- ==========================================
--- OPEN BUTTON
+-- CLOSE
 -- ==========================================
 
-local OpenBtn = Instance.new("TextButton")
-OpenBtn.Size = UDim2.new(0, 46, 0, 46)
-OpenBtn.Position = UDim2.new(0, 15, 0.5, -23)
-OpenBtn.BackgroundColor3 = T.Accent
-OpenBtn.Text = "L"
-OpenBtn.Font = Enum.Font.GothamBold
-OpenBtn.TextSize = 20
-OpenBtn.TextColor3 = T.Text
-OpenBtn.AutoButtonColor = false
-OpenBtn.Visible = false
-OpenBtn.Parent = sg
+local Close = create("TextButton", Header)
 
-corner(OpenBtn, 23)
+Close.Size = UDim2.new(0, 28, 0, 28)
+Close.Position = UDim2.new(1, -33, 0.5, -14)
+Close.BackgroundColor3 = C.Close
 
--- ==========================================
--- MINIMIZE / OPEN / CLOSE
--- ==========================================
+Close.Text = "×"
+Close.Font = Enum.Font.GothamBold
+Close.TextSize = 17
+Close.TextColor3 = C.Text
 
-bindDrag(MinBtn, Main, function()
-    Main.Visible = false
-    OpenBtn.Visible = true
-end)
+Close.AutoButtonColor = false
 
-bindDrag(OpenBtn, OpenBtn, function()
-    Main.Visible = true
-    OpenBtn.Visible = false
-end)
-
-bindDrag(CloseBtn, Main, function()
-    cleanup()
-end)
+makeCorner(Close, 7)
 
 -- ==========================================
 -- BODY
 -- ==========================================
 
-local Body = Instance.new("Frame")
-Body.Size = UDim2.new(1, 0, 1, -40)
-Body.Position = UDim2.new(0, 0, 0, 40)
+local Body = create("Frame", Main)
+
+Body.Size = UDim2.new(1, -20, 1, -52)
+Body.Position = UDim2.new(0, 10, 0, 48)
 Body.BackgroundTransparency = 1
-Body.Parent = Main
 
-local pad = Instance.new("UIPadding")
-pad.PaddingTop = UDim.new(0, 8)
-pad.PaddingLeft = UDim.new(0, 8)
-pad.PaddingRight = UDim.new(0, 8)
-pad.Parent = Body
+local Layout = create("UIListLayout", Body)
 
-local list = Instance.new("UIListLayout")
-list.Padding = UDim.new(0, 7)
-list.Parent = Body
+Layout.Padding = UDim.new(0, 7)
+Layout.SortOrder = Enum.SortOrder.LayoutOrder
 
 -- ==========================================
 -- FEATURE ROW
 -- ==========================================
 
-local function createRow(label, key)
-    local row = Instance.new("Frame")
+local function createFeatureRow(title, key, order)
+    local Row = create("Frame", Body)
 
-    row.Size = UDim2.new(1, 0, 0, 62)
-    row.BackgroundColor3 = T.Card
-    row.BorderSizePixel = 0
-    row.Parent = Body
+    Row.Name = key
+    Row.LayoutOrder = order
 
-    corner(row, 9)
-    stroke(row)
+    Row.Size = UDim2.new(1, 0, 0, 55)
+    Row.BackgroundColor3 = C.Row
+    Row.BorderSizePixel = 0
 
-    bindDrag(row, Main)
+    makeCorner(Row, 9)
+    makeStroke(Row)
 
-    -- LABEL
-    local lb = Instance.new("TextLabel")
-    lb.Size = UDim2.new(0, 62, 0, 22)
-    lb.Position = UDim2.new(0, 10, 0, 8)
-    lb.BackgroundTransparency = 1
-    lb.Text = label
-    lb.Font = Enum.Font.GothamBold
-    lb.TextSize = 12
-    lb.TextColor3 = T.Text
-    lb.TextXAlignment = Enum.TextXAlignment.Left
-    lb.Parent = row
+    bindDrag(Row, Main)
+
+    -- FEATURE NAME
+    local Name = create("TextLabel", Row)
+
+    Name.Size = UDim2.new(0, 65, 1, 0)
+    Name.Position = UDim2.new(0, 11, 0, 0)
+
+    Name.BackgroundTransparency = 1
+    Name.Text = title
+
+    Name.Font = Enum.Font.GothamBold
+    Name.TextSize = 12
+    Name.TextColor3 = C.Text
+
+    Name.TextXAlignment = Enum.TextXAlignment.Left
 
     -- VALUE BOX
-    local box = Instance.new("TextBox")
-    box.Size = UDim2.new(0, 48, 0, 28)
-    box.Position = UDim2.new(0, 10, 1, -35)
-    box.BackgroundColor3 = T.Input
-    box.Text = tostring(V[key])
-    box.Font = Enum.Font.GothamBold
-    box.TextSize = 12
-    box.TextColor3 = T.Text
-    box.ClearTextOnFocus = false
-    box.Parent = row
+    local Input = create("TextBox", Row)
 
-    corner(box, 7)
+    Input.Size = UDim2.new(0, 55, 0, 31)
+    Input.Position = UDim2.new(1, -127, 0.5, -15)
 
-    box.FocusLost:Connect(function()
-        local n = tonumber(box.Text)
+    Input.BackgroundColor3 = C.Input
+    Input.BorderSizePixel = 0
 
-        if n and n >= 0 then
-            V[key] = n
+    Input.Text = tostring(Value[key])
+    Input.Font = Enum.Font.GothamBold
+    Input.TextSize = 12
+    Input.TextColor3 = C.Text
+
+    Input.ClearTextOnFocus = false
+    Input.TextXAlignment = Enum.TextXAlignment.Center
+
+    makeCorner(Input, 7)
+
+    Input.FocusLost:Connect(function()
+        local number = tonumber(Input.Text)
+
+        if number and number >= 0 then
+            Value[key] = number
         else
-            box.Text = tostring(V[key])
+            Input.Text = tostring(Value[key])
         end
     end)
 
-    -- ON / OFF BUTTON
-    local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(0, 62, 0, 30)
-    btn.Position = UDim2.new(1, -72, 0.5, -15)
-    btn.BackgroundColor3 = T.Off
-    btn.Text = "OFF"
-    btn.Font = Enum.Font.GothamBold
-    btn.TextSize = 12
-    btn.TextColor3 = T.Text
-    btn.AutoButtonColor = false
-    btn.Parent = row
+    -- ON / OFF
+    local Toggle = create("TextButton", Row)
 
-    corner(btn, 7)
+    Toggle.Size = UDim2.new(0, 58, 0, 31)
+    Toggle.Position = UDim2.new(1, -65, 0.5, -15)
 
-    bindDrag(btn, Main, function()
-        S[key] = not S[key]
+    Toggle.BackgroundColor3 = C.Inactive
+    Toggle.BorderSizePixel = 0
 
-        btn.Text = S[key] and "ON" or "OFF"
+    Toggle.Text = "OFF"
+    Toggle.Font = Enum.Font.GothamBold
+    Toggle.TextSize = 11
+    Toggle.TextColor3 = C.Text
+
+    Toggle.AutoButtonColor = false
+
+    makeCorner(Toggle, 7)
+
+    bindDrag(Toggle, Main, function()
+        State[key] = not State[key]
+
+        Toggle.Text = State[key] and "ON" or "OFF"
 
         TweenService:Create(
-            btn,
-            TweenInfo.new(0.15),
+            Toggle,
+            TweenInfo.new(
+                0.15,
+                Enum.EasingStyle.Quad,
+                Enum.EasingDirection.Out
+            ),
             {
-                BackgroundColor3 = S[key] and T.On or T.Off
+                BackgroundColor3 =
+                    State[key]
+                    and C.Active
+                    or C.Inactive
             }
         ):Play()
 
-        applyChange(key, S[key])
+        applyFeature(key, State[key])
     end)
 end
 
 -- ==========================================
--- ONLY 3 FEATURES
+-- FEATURES
 -- ==========================================
 
-createRow("SPEED", "Speed")
-createRow("JUMP", "Jump")
-createRow("FLY", "Fly")
+createFeatureRow("SPEED", "Speed", 1)
+createFeatureRow("JUMP", "Jump", 2)
+createFeatureRow("FLY", "Fly", 3)
+
+-- ==========================================
+-- OPEN BUTTON
+-- ==========================================
+
+local OpenButton = create("TextButton", ScreenGui)
+
+OpenButton.Size = UDim2.new(0, 46, 0, 46)
+OpenButton.Position = UDim2.new(0, 16, 0.5, -23)
+
+OpenButton.BackgroundColor3 = C.Accent
+OpenButton.BorderSizePixel = 0
+
+OpenButton.Text = "L"
+OpenButton.Font = Enum.Font.GothamBold
+OpenButton.TextSize = 19
+OpenButton.TextColor3 = C.Text
+
+OpenButton.AutoButtonColor = false
+OpenButton.Visible = false
+
+makeCorner(OpenButton, 23)
+
+-- ==========================================
+-- MINIMIZE / OPEN
+-- ==========================================
+
+bindDrag(Minimize, Main, function()
+    Main.Visible = false
+    OpenButton.Visible = true
+end)
+
+bindDrag(OpenButton, OpenButton, function()
+    Main.Visible = true
+    OpenButton.Visible = false
+end)
 
 -- ==========================================
 -- CLEANUP
 -- ==========================================
 
-cleanup = function()
-    for key in pairs(S) do
-        if S[key] then
-            S[key] = false
-            applyChange(key, false)
-        end
-    end
+local function cleanup()
+    State.Speed = false
+    State.Jump = false
+    State.Fly = false
+
+    applyFeature("Speed", false)
+    applyFeature("Jump", false)
+    applyFeature("Fly", false)
 
     stopFly()
 
-    for _, connection in ipairs(conns) do
+    for _, connection in ipairs(Connections) do
         pcall(function()
             connection:Disconnect()
         end)
     end
 
-    conns = {}
+    Connections = {}
 
-    if sg then
-        sg:Destroy()
+    if ScreenGui then
+        ScreenGui:Destroy()
     end
+
+    _G.LiviaCleanup = nil
 end
 
 _G.LiviaCleanup = cleanup
+
+-- Close button uses direct connection
+bindDrag(Close, Main, function()
+    cleanup()
+end)
