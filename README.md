@@ -1,27 +1,21 @@
 <div align="center">
 
-<img src="assets/banner.png" alt="Livia Panel: panel mobile untuk Roblox executor" width="100%">
+<img src="docs/images/banner.id.svg" alt="Livia Panel: panel Speed, Jump, Fly, Ghost, dan ESP untuk Roblox executor" width="100%">
 
-<br>
+<a href="https://github.com/akndrn000/LiviaPanel.lua/blob/main/LiviaPanel.lua"><img src="https://img.shields.io/badge/SCRIPT-LIVIAPANEL.LUA-7c5cff?style=for-the-badge&labelColor=111111" alt="LiviaPanel.lua"></a>
 
-![Lua](https://img.shields.io/badge/Lua-2C2D72?style=flat-square&logo=lua&logoColor=white)
-![Roblox](https://img.shields.io/badge/Roblox_executor-000000?style=flat-square&logo=roblox&logoColor=white)
-![Mobile](https://img.shields.io/badge/Mobile-friendly-7c5cff?style=flat-square)
-![MIT](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)
+<img src="https://img.shields.io/badge/Lua-2C2D72?style=flat-square&logo=lua&logoColor=white" alt="Lua">
+<img src="https://img.shields.io/badge/Roblox-E2231A?style=flat-square&logo=roblox&logoColor=white" alt="Roblox">
+<img src="https://img.shields.io/badge/Layar_HP-7c5cff?style=flat-square&logo=android&logoColor=white" alt="Layar HP">
+<img src="https://img.shields.io/badge/Executor-Delta-2ecc85?style=flat-square" alt="Executor Delta">
+<img src="https://img.shields.io/badge/Versi-1.0-1f9bff?style=flat-square" alt="Versi 1.0">
+<img src="https://img.shields.io/badge/Lisensi-MIT-5b6b8c?style=flat-square" alt="Lisensi MIT">
 
 [Bahasa Indonesia](README.md) · [English](README.en.md)
 
-**Panel sederhana untuk Roblox executor, dibuat untuk layar HP.**
-Lima fitur dalam satu panel. Satu file Lua, tanpa dependensi.
+**Satu panel mungil untuk Roblox executor.** Speed, Jump, Fly, Ghost, dan ESP Player dalam satu skrip Lua yang muat di layar HP.
 
-[Coba sekarang](#coba-sekarang) ·
-[Fitur](#fitur) ·
-[Cara pakai](#cara-pakai) ·
-[Kontrol](#kontrol) ·
-[Kustomisasi](#kustomisasi) ·
-[Privasi](#privasi-dan-keamanan) ·
-[Batasan](#batasan-yang-diketahui) ·
-[Kontribusi](#kontribusi)
+[Coba sekarang](#cara-pakai) · [Fitur](#fitur) · [Kontrol](#kontrol) · [Nilai bawaan](#nilai-bawaan) · [Keamanan](#keamanan-dan-risiko) · [Kustomisasi](#kustomisasi) · [Kontribusi](#kontribusi)
 
 </div>
 
@@ -29,145 +23,180 @@ Lima fitur dalam satu panel. Satu file Lua, tanpa dependensi.
 
 ## Ringkasan
 
-Executor di HP biasanya hanya memberi kotak teks, dan tombol kecil yang gampang tertekan saat layar digeser. Livia Panel menyatukan Speed, Jump, Fly, Ghost, dan ESP Player dalam satu panel dengan tombol ON/OFF dan kotak angka, lalu menjalankannya dari satu berkas Lua.
+Banyak skrip executor memenuhi layar dengan menu besar yang susah ditekan di HP. Livia Panel memakai satu jendela kecil berukuran 300 x 342 px dengan lima baris tombol, bisa digeser ke mana saja, dan bisa diciutkan jadi bulatan.
 
-Ada tiga hal yang menjadi pegangan panel ini:
+Tiga hal yang menjadi pegangan skrip ini:
 
-- **Satu file, satu panel.** Salin satu berkas ke executor, tekan Execute. Tanpa dependensi, tanpa pengaturan tambahan.
-- **Aman disentuh.** Tombol hanya aktif saat ditekan singkat. Geseran lebih dari 10 px dianggap memindahkan panel, jadi menggeser tidak ikut menyalakan atau mematikan fitur.
-- **Bersih saat ditutup.** Tombol `X` mematikan semua fitur, memutus semua koneksi, dan menghapus panel. Menjalankan script lagi tidak membuat panel dobel.
-
-## Coba sekarang
-
-Tiga langkah dari nol sampai panel tampil:
-
-1. **Salin** isi [`LiviaPanel.lua`](LiviaPanel.lua) ke executor Anda (contoh: Delta).
-2. Tekan **Execute**. Panel **LIVIA PANEL** muncul di layar.
-3. Isi angka di kotak, lalu tekan **ON** pada fitur yang Anda mau.
-
-> [!WARNING]
-> Menggunakan script di game bisa melanggar Terms of Use Roblox dan berisiko membuat akun terkena sanksi. Baca [Batasan yang diketahui](#batasan-yang-diketahui) sebelum memakainya.
+- **Satu file, tanpa dependensi.** Semua kode ada di `LiviaPanel.lua` (sekitar 350 baris). Tidak ada library, tidak ada file tambahan.
+- **Dirancang untuk sentuhan.** Panel membedakan ketukan dan geseran, jadi jari yang menggeser panel tidak menekan tombol secara tidak sengaja.
+- **Bersih saat dimatikan.** Tombol `X` mematikan semua fitur, memutus semua koneksi, lalu menghapus panel. Menjalankan skrip dua kali tidak membuat panel ganda.
 
 ## Tampilan
 
-<p align="center">
-  <img src="assets/preview.png" alt="Tampilan panel Livia" width="360">
-</p>
+<div align="center">
 
-<p align="center"><sub>Ukuran panel 300×342, tinggi tiap baris 46, teks ukuran 14, jadi nyaman disentuh di HP. Nilai pada gambar adalah nilai contoh.</sub></p>
+<img src="docs/images/preview.id.svg" alt="Tiga tampilan panel: bawaan, fitur menyala, dan diminimize" width="100%">
+
+</div>
+
+Gambar adalah ilustrasi vektor yang meniru warna, ukuran, dan susunan panel asli. Nilai pada gambar sama dengan nilai bawaan skrip.
 
 ## Fitur
 
-| | |
-|---|---|
-| **Speed** | Kecepatan lari. Angka + ON/OFF. Bawaan 50, kembali ke 16 saat OFF. |
-| **Jump** | Tinggi lompat. Angka + ON/OFF. Bawaan 100, kembali ke 50 saat OFF. |
-| **Fly** | Terbang. Angka adalah kecepatan terbang (bawaan 60). Karakter melayang bila joystick dilepas. |
-| **Ghost** | Tembus tembok (noclip). ON/OFF. |
-| **ESP Player** | Pemain lain terlihat tembus pandang lewat Highlight merah dengan garis tepi putih. ON/OFF. |
-| **Tap, bukan geser** | Tombol hanya aktif saat ditekan singkat. Geseran lebih dari 10 px memindahkan panel. |
-| **Geser dari mana saja** | Panel bisa digeser dari header, latar, baris, atau langsung dari tombol. |
-| **Nilai langsung berlaku** | Angka di kotak bisa diubah saat fitur sedang ON dan langsung dipakai. |
-| **Minimize** | Tombol `-` mengecilkan panel menjadi bulatan **L** yang bisa digeser. |
-| **Tutup bersih** | Tombol `X` mematikan semua fitur dan menghapus panel. Menjalankan script lagi tidak membuat panel dobel. |
+<div align="center">
+
+<img src="docs/images/features.id.svg" alt="Lima fitur Livia Panel: Speed, Jump, Fly, Ghost, dan ESP Player" width="100%">
+
+</div>
+
+| Fitur          | Pengaturan     | Keterangan                                                                             |
+| -------------- | -------------- | -------------------------------------------------------------------------------------- |
+| **Speed**      | angka + ON/OFF | Kecepatan lari. Kembali ke 16 saat dimatikan.                                          |
+| **Jump**       | angka + ON/OFF | Tinggi lompat. Kembali ke 50 saat dimatikan.                                           |
+| **Fly**        | angka + ON/OFF | Terbang bebas. Angka menentukan kecepatan.                                             |
+| **Ghost**      | ON/OFF         | Tembus tembok (noclip) dengan mematikan collision karakter.                            |
+| **ESP Player** | ON/OFF         | Pemain lain tampak tembus pandang dengan sorotan merah dan garis tepi putih.           |
+| **Geser**      | sentuh + tarik | Geser panel lewat header, latar, atau baris mana pun.                                  |
+| **Minimize**   | tombol `-`     | Panel menciut jadi bulatan **L** yang bisa dipindah dan diketuk untuk membuka kembali. |
+| **Angka live** | kotak angka    | Ubah angka saat fitur sedang ON dan nilai baru langsung berlaku.                       |
+| **Bertahan**   | otomatis       | Fitur tetap menyala setelah karakter respawn.                                          |
 
 ## Cara pakai
 
-1. **Buka** game Roblox dan jalankan executor Anda (contoh: Delta).
-2. **Salin** isi [`LiviaPanel.lua`](LiviaPanel.lua) ke executor lalu tekan **Execute**, atau pakai loadstring:
+<div align="center">
 
-   ```lua
-   loadstring(game:HttpGet("https://raw.githubusercontent.com/USERNAME/REPO/main/LiviaPanel.lua"))()
-   ```
+<img src="docs/images/workflow.id.svg" alt="Alur pakai Livia Panel: salin, jalankan, nyalakan, atur" width="100%">
 
-   Ganti `USERNAME` dan `REPO` dengan akun dan nama repository Anda.
-3. **Isi angka** di kotak Speed, Jump, atau Fly bila ingin mengubah nilai awal.
-4. **Tekan ON** pada fitur yang diinginkan. Tekan OFF untuk mematikannya.
-5. Untuk **Fly**, gerakkan joystick untuk maju. Saat bergerak, arahkan kamera ke atas atau ke bawah untuk naik atau turun.
-6. Tekan `-` untuk menyembunyikan panel, atau `X` untuk menutupnya sepenuhnya.
+</div>
+
+1. **Salin** isi [`LiviaPanel.lua`](LiviaPanel.lua), atau siapkan baris `loadstring` di bawah.
+2. **Tempel** ke executor, lalu **jalankan** di dalam game Roblox.
+3. **Nyalakan** fitur dengan mengetuk tombol `OFF` di barisnya sampai berubah menjadi `ON`. Isi angka di kotak bila ingin nilai lain.
+4. **Atur** panel: geser ke posisi yang nyaman, ciutkan dengan `-`, atau tutup dengan `X`.
+
+Lewat `loadstring`:
+
+```lua
+loadstring(game:HttpGet("https://raw.githubusercontent.com/akndrn000/LiviaPanel.lua/main/LiviaPanel.lua"))()
+```
 
 > [!TIP]
-> Bila speed atau jump terasa ditarik balik oleh game, turunkan angkanya. Nilai yang lebih kecil lebih jarang memicu anti-cheat.
-
-> [!NOTE]
-> Panel dipasang di `CoreGui`, jadi executor Anda harus mengizinkan akses ke sana.
+> Mulai dengan angka kecil, misalnya Speed 30 atau Jump 70. Naikkan pelan-pelan sampai game mulai menarik karaktermu kembali, lalu turunkan sedikit.
 
 ## Kontrol
 
-| Tombol | Fungsi |
-|---|---|
-| `ON` / `OFF` | Menyalakan atau mematikan fitur pada baris itu. |
-| Kotak angka | Mengatur nilai (Speed, Jump, Fly). Input yang bukan angka, atau angka negatif, dikembalikan ke nilai sebelumnya. |
-| `-` | Menyembunyikan panel menjadi bulatan **L**. |
-| **L** (bulat) | Membuka panel kembali. |
-| `X` | Mematikan semua fitur lalu menutup panel. |
-| Geser | Memindahkan panel. Geseran lebih dari 10 px dianggap menggeser, bukan menekan. |
+<div align="center">
 
-### Nilai bawaan
+<img src="docs/images/controls.id.svg" alt="Kontrol panel: ketuk, geser, minimize, dan tutup" width="100%">
 
-| Fitur | Nilai awal | Saat dimatikan |
-|---|---|---|
-| Speed | 50 | `WalkSpeed` kembali ke 16 |
-| Jump | 100 | `JumpPower` kembali ke 50 |
-| Fly | 60 | Terbang berhenti dan karakter bisa berjalan lagi |
-| Ghost | - | Tabrakan karakter diaktifkan kembali |
-| ESP Player | - | Semua Highlight dihapus |
+</div>
+
+| Aksi                | Hasil                                                                                         |
+| ------------------- | --------------------------------------------------------------------------------------------- |
+| Ketuk tombol        | Mengubah `OFF` menjadi `ON`, atau sebaliknya.                                                 |
+| Geser lebih dari 10 px | Memindahkan panel. Tombol tidak aktif selama jari bergeser, hanya saat kamu mengetuk singkat. |
+| `-`                 | Menciutkan panel jadi bulatan **L**. Ketuk bulatan itu untuk membuka lagi.                    |
+| `X`                 | Mematikan semua fitur yang menyala, memutus koneksi, dan menutup panel.                       |
+| Ubah kotak angka    | Nilai baru berlaku saat itu juga bila fiturnya sedang ON. Angka negatif atau teks ditolak.    |
+
+### Mengatur ketinggian saat Fly
+
+<div align="center">
+
+<img src="docs/images/fly.id.svg" alt="Cara mengatur ketinggian saat Fly: arahkan kamera ke atas atau ke bawah sambil mendorong joystick" width="100%">
+
+</div>
+
+Joystick menentukan arah dan kecepatan gerak. Kemiringan kamera menentukan naik atau turun: arahkan kamera ke atas sambil mendorong joystick maju untuk naik, arahkan ke bawah untuk turun. Lepas joystick dan karakter melayang di tempat.
+
+## Nilai bawaan
+
+| Fitur | Nilai bawaan | Saat dimatikan                    |
+| ----- | ------------ | --------------------------------- |
+| Speed | `50`         | `WalkSpeed` kembali ke `16`       |
+| Jump  | `100`        | `JumpPower` kembali ke `50`       |
+| Fly   | `60`         | Gaya terbang dilepas              |
+| Ghost | tanpa angka  | Collision `HumanoidRootPart` dipulihkan |
+| ESP   | tanpa angka  | Semua sorotan dihapus             |
+
+> [!NOTE]
+> Nilai pemulihan `16` dan `50` ditulis tetap di skrip. Game yang memakai `WalkSpeed` atau `JumpPower` khusus akan kembali ke 16 dan 50 setelah kamu mematikan fiturnya. Bila fiturnya sudah OFF, respawn juga mengembalikan nilai asli game.
+
+## Cara kerja
+
+| Fitur | Mekanisme                                                                                                                                                    |
+| ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Speed | Setiap frame (`Heartbeat`), skrip mengisi `Humanoid.WalkSpeed` dengan angka di kotak.                                                                        |
+| Jump  | Setiap frame, skrip mengaktifkan `UseJumpPower` dan mengisi `JumpPower`.                                                                                     |
+| Fly   | `BodyVelocity` dan `BodyGyro` dipasang di `HumanoidRootPart` dengan `PlatformStand` aktif. Arah dari `MoveDirection`, ketinggian dari kemiringan kamera.     |
+| Ghost | Setiap langkah fisika (`Stepped`), semua `BasePart` karakter diatur `CanCollide = false`.                                                                    |
+| ESP   | Satu `Highlight` per pemain: isi merah (transparansi 0,5), garis tepi putih, `AlwaysOnTop`. Sorotan dihapus saat pemain keluar atau ESP dimatikan.            |
+
+Karena nilai diterapkan ulang setiap frame, fitur tetap menyala setelah respawn tanpa perlu dinyalakan lagi.
+
+## Keamanan dan risiko
+
+<div align="center">
+
+<img src="docs/images/safety.id.svg" alt="Catatan keamanan: sisi client, anti-cheat, dan risiko akun" width="100%">
+
+</div>
+
+- Skrip berjalan di **sisi client**. Server game tidak ikut diubah.
+- Beberapa game punya **anti-cheat**. Bila speed atau jump terasa ditarik balik, pakai angka yang lebih kecil.
+- Menjalankan skrip di game **bisa melanggar Terms of Use Roblox** dan berisiko membuat akun terkena sanksi. Gunakan dengan risiko sendiri.
+- Skrip memakai `CoreGui` untuk menampilkan panel, jadi executor harus menyediakan akses ke sana.
+- Pasang skrip hanya dari repository ini. Periksa isinya lebih dulu bila kamu menyalinnya dari tempat lain.
+
+## Batasan yang diketahui
+
+- **Hanya pemain lokal.** Fitur memengaruhi karakter kamu sendiri. ESP hanya menyorot pemain lain.
+- **Nilai tidak tersimpan.** Setelah keluar dari game atau menutup panel, angka kembali ke nilai bawaan.
+- **Satu panel sekaligus.** Menjalankan skrip lagi menutup panel lama lewat `_G.LiviaCleanup`, lalu membuat yang baru.
+- **Ghost dan respawn.** Bila karakter masih terasa tembus setelah Ghost dimatikan, respawn untuk memulihkan collision penuh.
+- **ESP punya batas dari Roblox.** Roblox membatasi jumlah `Highlight` yang tampil bersamaan, jadi di server yang penuh sebagian pemain bisa tidak tersorot.
+- **Diuji di Delta.** Skrip dirancang untuk layar HP dan konsepnya diuji di Delta. Executor lain mungkin bekerja, tetapi belum diverifikasi.
 
 ## Kustomisasi
 
 Semua pengaturan ada di bagian atas `LiviaPanel.lua`.
 
-| Yang ingin diubah | Cara |
-|---|---|
-| **Nilai awal** | Ubah tabel `V`, misalnya `local V = {Speed = 50, Jump = 100, Fly = 60}`. |
-| **Warna** | Ubah tabel `T` (`Accent`, `On`, `Off`, `Red`, dan seterusnya). |
-| **Sensitivitas geser** | Ubah `DRAG_THRESHOLD` (bawaan 10 px). Makin besar, makin sulit tombol tertekan tanpa sengaja saat sentuhan sedikit bergeser. |
-| **Ukuran panel** | Ubah `Main.Size` dan tinggi baris di `createRow`. |
+| Ingin mengubah           | Ubah                                                                                              |
+| ------------------------ | ------------------------------------------------------------------------------------------------- |
+| Angka bawaan             | Tabel `V` (`Speed = 50`, `Jump = 100`, `Fly = 60`).                                               |
+| Warna panel              | Tabel `T` (`Accent`, `On`, `Off`, `Red`, dan seterusnya).                                         |
+| Sensitivitas geser       | Konstanta `DRAG_THRESHOLD` (bawaan `10` piksel).                                                  |
+| Ukuran dan posisi panel  | `Main.Size` dan `Main.Position`. Tiap baris tambahan butuh 54 px tinggi (46 baris + 8 jarak).     |
+| Nilai pemulihan          | Fungsi `applyChange` (`16` untuk Speed, `50` untuk Jump).                                         |
+| Menambah fitur           | Tambah kunci di `S` dan `V`, logikanya di `Heartbeat`, pemulihannya di `applyChange`, lalu `createRow`. |
 
-## Privasi dan keamanan
-
-- Script **berjalan di sisi client** dan tidak mengirim data ke mana pun. Tidak ada panggilan jaringan di dalam `LiviaPanel.lua`.
-- Tidak ada analytics, pelacak, atau penyimpanan data. Nilai kembali ke bawaan setiap kali script dijalankan ulang.
-- Jangan menjalankan script dari sumber yang tidak Anda percaya. Jalankan hanya salinan yang Anda baca sendiri, atau dari repository Anda.
-
-## Batasan yang diketahui
-
-- **Anti-cheat.** Beberapa game punya anti-cheat. Jika speed atau jump terasa ditarik balik, gunakan angka yang lebih kecil.
-- **Risiko akun.** Menggunakan script di game bisa melanggar Terms of Use Roblox dan berisiko membuat akun terkena sanksi. Gunakan dengan risiko sendiri.
-- **Nilai pemulihan tetap.** Saat OFF, Speed selalu kembali ke 16 dan Jump ke 50, bukan ke nilai bawaan game bila game itu memakai nilai lain.
-- **Fly bergantung pada kamera.** Naik dan turun hanya terjadi saat joystick digerakkan. Bergerak mundur membalik arah naik dan turun.
-- **Tidak ada penyimpanan.** Nilai tidak diingat setelah script dijalankan ulang.
-- **Bergantung pada executor.** Panel dipasang di `CoreGui`, jadi executor yang tidak mengizinkannya tidak akan menampilkan panel.
-- "Roblox" adalah merek dagang Roblox Corporation, disebut hanya untuk menjelaskan kegunaan script. Proyek ini **tidak berafiliasi dengan Roblox**.
-
-## Struktur berkas
+## Struktur repository
 
 ```
-livia-panel/
-├── LiviaPanel.lua       # Script utama (UI + logika, satu berkas)
-├── assets/
-│   ├── banner.png       # Banner di atas README (1200x630, bisa jadi social preview)
-│   ├── en/
-│   │   └── banner.png   # Banner versi Inggris (dipakai README.en.md)
-│   └── preview.png      # Tampilan panel
-├── LICENSE              # MIT
-├── README.md            # Bahasa Indonesia
-└── README.en.md         # English
+LiviaPanel.lua          Seluruh skrip: state, logika fitur, sistem tap/geser, UI, cleanup
+README.md               Dokumentasi Bahasa Indonesia
+README.en.md            Dokumentasi English
+LICENSE                 Lisensi MIT
+docs/
+  generate-images.py    Pembuat semua gambar README (SVG, dua bahasa)
+  images/               banner, preview, features, workflow, controls, fly, safety, social-preview
 ```
 
-Isi `LiviaPanel.lua` dibagi per blok:
+Isi `LiviaPanel.lua` terbagi dalam lima bagian bertanda komentar: `STATE`, `FEATURE LOGIC`, `TAP vs DRAG SYSTEM`, `UI`, dan `CLEANUP`.
+
+### Membuat ulang gambar
+
+Gambar README dibuat oleh skrip Python tanpa dependensi wajib:
 
 ```
-STATE                 Variabel S (ON/OFF) dan V (nilai) + tema warna T
-FEATURE LOGIC         Heartbeat/Stepped untuk Speed, Jump, Fly, Ghost, ESP
-TAP vs DRAG SYSTEM    Pembeda geser dan tekan (DRAG_THRESHOLD)
-UI                    Header, baris fitur, tombol minimize/close
-CLEANUP               Mematikan fitur, memutus koneksi, menghapus GUI
+python3 docs/generate-images.py
 ```
+
+Ubah teks lewat kamus `STR` di dalam file itu. Bila `cairosvg` terpasang (`pip install cairosvg`), skrip juga membuat `social-preview.png` untuk dipasang di **Settings > Social preview** pada GitHub.
 
 ## Kontribusi
 
-Masukan dan perbaikan sangat diterima lewat issue atau pull request. Sebelum membuka pull request, uji perubahan di executor pada game nyata: nyalakan dan matikan tiap fitur, geser panel, minimize lalu buka lagi, dan tutup dengan `X` lalu jalankan ulang untuk memastikan tidak ada panel dobel. Sebutkan executor dan game yang dipakai di deskripsi PR.
+Masukan dan perbaikan sangat diterima. Sebelum membuka pull request, jalankan skrip di executor dan cek lima fitur serta tombol `-` dan `X`. Bila perubahanmu memengaruhi tampilan panel, jalankan `docs/generate-images.py` dan sertakan gambar yang diperbarui.
 
 ## Lisensi
 
@@ -176,5 +205,8 @@ Dirilis di bawah [Lisensi MIT](LICENSE).
 ---
 
 <div align="center">
-<sub>Livia Panel. Panel mobile untuk Roblox executor. Berjalan di sisi client.</sub>
+
+Livia Panel. Alat independen untuk Roblox executor. Tidak berafiliasi dengan Roblox Corporation.
+"Roblox" adalah merek dagang Roblox Corporation, dipakai hanya untuk menjelaskan fungsi skrip.
+
 </div>
